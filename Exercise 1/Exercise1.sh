@@ -33,7 +33,6 @@ nodes:
   - hostPath: /tmp/worker3
     containerPath: /work">>kind-config.yaml
 kind create cluster --name moreno --config kind-config.yaml
-sleep 2
 
 #STEP 9: Labels into nodes 
 kubectl label nodes moreno-worker type=front
@@ -48,11 +47,9 @@ docker pull jlaredo/formacion-static-server-amd64
 #STEP 11: Creation of namespaces
 kubectl create namespace frontend
 kubectl create namespace backend
-sleep 2
 
 #STEP 12: Ingress controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-sleep 2
 
 #STEP 13: Creation of files
    #Config files
@@ -73,9 +70,8 @@ data:
   DB_PASSWORD: S3ViZXJuZXRlcwo=
 type: Opaque">>secret.yaml
 kubectl apply -f configmap.yaml
-sleep 2
 kubectl apply -f secret.yaml
-sleep 2
+
    #Volumed files
 echo "apiVersion: v1
 kind: PersistentVolume
@@ -103,9 +99,8 @@ spec:
     - ReadWriteOnce
   storageClassName: \"\"">>pvc.yaml
 kubectl apply -f pv.yaml
-sleep 2
 kubectl apply -f pvc.yaml
-sleep 2
+
    #Service files
 echo "apiVersion: v1
 kind: Service
@@ -150,50 +145,8 @@ spec:
     targetPort: 80
 #  type: ClusterIP">> service-ss.yaml
 kubectl apply -f service-web.yaml
-sleep 2
 kubectl apply -f service-db.yaml
-sleep 2
 kubectl apply -f service-ss.yaml
-sleep 2
-   #Ingress files
-echo "apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: webserver
-  namespace: frontend
-spec:
-  rules:
-  - http:
-      paths:
-        - backend:
-            service:
-              name: webserver
-              port:
-                number: 80
-          path: /
-          pathType: Prefix">> ingress-web.yaml
-sleep 2
-echo "apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: static-server
-  namespace: frontend
-spec:
-  rules:
-  - http:
-      paths:
-        - backend:
-            service:
-              name: static-server
-              port:
-                number: 80
-          path: /static
-          pathType: Prefix">> ingress-ss.yaml
-sleep 3
-kubectl apply -f ingress-web.yaml
-sleep 3
-kubectl apply -f ingress-ss.yaml
-sleep 3
 
 #STEP 14: Creation of web server
 #Web-->replicaset1.yaml
@@ -260,7 +213,6 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 5">>replicaset1.yaml
 kubectl apply -f replicaset1.yaml
-sleep 2
 
 #STEP 15: Creation of database
 #Base de datos-->deployment.yaml
@@ -314,7 +266,6 @@ spec:
         persistentVolumeClaim:
           claimName: pvc">>deployment.yaml
 kubectl apply -f deployment.yaml
-sleep 2
 
 #STEP 16: Creation of content server
 #Server contenidos-->replicaset2.yaml
@@ -373,9 +324,45 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 5">>replicaset2.yaml
 kubectl apply -f replicaset2.yaml
-sleep 2
 
-#STEP 17: testing
+#STEP 17: Ingress files
+echo "apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webserver
+  namespace: frontend
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            service:
+              name: webserver
+              port:
+                number: 80
+          path: /
+          pathType: Prefix">> ingress-web.yaml
+echo "apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: static-server
+  namespace: frontend
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            service:
+              name: static-server
+              port:
+                number: 80
+          path: /static
+          pathType: Prefix">> ingress-ss.yaml
+
+kubectl apply -f ingress-web.yaml
+kubectl apply -f ingress-ss.yaml
+
+#STEP 18: testing
 #Web
 kubectl get pods --namespace=frontend -owide --namespace=frontend
 #kubectl describe replicaset --namespace=frontend
