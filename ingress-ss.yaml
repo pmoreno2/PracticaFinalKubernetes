@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: static-server
+  namespace: frontend
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            service:
+              name: static-server
+              port:
+                number: 80
+          path: /static
+          pathType: Prefix

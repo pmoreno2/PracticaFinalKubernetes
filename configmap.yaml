@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm
+  namespace: frontend
+data:
+  DB_USER: "formacion"
+  DB_HOSTNAME: "Pedro Moreno"
