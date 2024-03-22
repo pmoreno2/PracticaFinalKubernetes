@@ -101,6 +101,7 @@ spec:
 kubectl apply -f pv.yaml
 kubectl apply -f pvc.yaml
 
+#STEP 13: Service files
    #Service files
 echo "apiVersion: v1
 kind: Service
@@ -148,7 +149,45 @@ kubectl apply -f service-web.yaml
 kubectl apply -f service-db.yaml
 kubectl apply -f service-ss.yaml
 
-#STEP 14: Creation of web server
+#STEP 14: Ingress files
+kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+echo "apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webserver
+  namespace: frontend
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            service:
+              name: webserver
+              port:
+                number: 80
+          path: /
+          pathType: Prefix">> ingress-web.yaml
+echo "apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: static-server
+  namespace: frontend
+spec:
+  rules:
+  - http:
+      paths:
+        - backend:
+            service:
+              name: static-server
+              port:
+                number: 80
+          path: /static
+          pathType: Prefix">> ingress-ss.yaml
+
+kubectl apply -f ingress-web.yaml
+kubectl apply -f ingress-ss.yaml
+
+#STEP 15: Creation of web server
 #Web-->replicaset1.yaml
 echo "apiVersion: apps/v1
 kind: ReplicaSet
@@ -214,7 +253,7 @@ spec:
           periodSeconds: 5">>replicaset1.yaml
 kubectl apply -f replicaset1.yaml
 
-#STEP 15: Creation of database
+#STEP 16: Creation of database
 #Base de datos-->deployment.yaml
 echo "apiVersion: apps/v1
 kind: Deployment
@@ -267,7 +306,7 @@ spec:
           claimName: pvc">>deployment.yaml
 kubectl apply -f deployment.yaml
 
-#STEP 16: Creation of content server
+#STEP 17: Creation of content server
 #Server contenidos-->replicaset2.yaml
 echo "apiVersion: apps/v1
 kind: ReplicaSet
@@ -325,42 +364,6 @@ spec:
           periodSeconds: 5">>replicaset2.yaml
 kubectl apply -f replicaset2.yaml
 
-#STEP 17: Ingress files
-echo "apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: webserver
-  namespace: frontend
-spec:
-  rules:
-  - http:
-      paths:
-        - backend:
-            service:
-              name: webserver
-              port:
-                number: 80
-          path: /
-          pathType: Prefix">> ingress-web.yaml
-echo "apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: static-server
-  namespace: frontend
-spec:
-  rules:
-  - http:
-      paths:
-        - backend:
-            service:
-              name: static-server
-              port:
-                number: 80
-          path: /static
-          pathType: Prefix">> ingress-ss.yaml
-
-kubectl apply -f ingress-web.yaml
-kubectl apply -f ingress-ss.yaml
 
 #STEP 18: testing
 #Web
