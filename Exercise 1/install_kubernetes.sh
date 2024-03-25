@@ -19,7 +19,7 @@ sudo apt update
 apt-cache policy docker-ce
 sudo apt install -y docker-ce
 sudo usermod -aG docker ${USER}
-#sudo usermod -aG docker pedro
+sudo usermod -aG docker pedro
 
 #STEP 4: Install Go
 wget https://go.dev/dl/go1.19.3.linux-arm64.tar.gz

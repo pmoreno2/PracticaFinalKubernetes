@@ -41,10 +41,10 @@ spec:
               name: passwd
         resources:
           requests:
-            memory: 128M
+            memory: 64M
             cpu: 0.1
           limits:
-            memory: 256M
+            memory: 128M
             cpu: 0.2
         ports:
         - containerPort: 80

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: database
-  namespace: frontend
+  namespace: backend
 spec:
   selector:
     app: database
