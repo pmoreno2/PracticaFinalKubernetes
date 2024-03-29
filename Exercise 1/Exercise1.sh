@@ -11,10 +11,7 @@ kubectl label nodes moreno-worker3 type=back
 kubectl create namespace frontend
 kubectl create namespace backend
 
-#STEP 11: Ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-
-#STEP 12: Creation of files
+#STEP 11: Creation of files
    #Config files
 kubectl apply -f configmap.yaml
 kubectl apply -f secret.yaml
@@ -23,32 +20,31 @@ kubectl apply -f secret.yaml
 kubectl apply -f pv.yaml
 kubectl apply -f pvc.yaml
 
-#STEP 13: Service files
+#STEP 12: Service files
    #Service files
 kubectl apply -f service-web.yaml
 kubectl apply -f service-db.yaml
 kubectl apply -f service-ss.yaml
 
-#STEP 14: Ingress files
+#STEP 13: Ingress files
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
+kubectl apply -f ingress.yaml
 
-kubectl apply -f ingress-web.yaml
-kubectl apply -f ingress-ss.yaml
-
-#STEP 15: Creation of web server
+#STEP 14: Creation of web server
 #Web-->replicaset1.yaml
 kubectl apply -f replicaset1.yaml
 
-#STEP 16: Creation of database
+#STEP 15: Creation of database
 #Base de datos-->deployment.yaml
 kubectl apply -f deployment.yaml
 
-#STEP 17: Creation of content server
+#STEP 16: Creation of content server
 #Server contenidos-->replicaset2.yaml
 kubectl apply -f replicaset2.yaml
 
 
-#STEP 18: testing
+#STEP 17: testing
 #Web
 kubectl get pods --namespace=frontend -owide --namespace=frontend
 #kubectl describe replicaset --namespace=frontend
